@@ -1,0 +1,28 @@
+div {
+    padding:0px;
+    margin:0px;
+}
+
+.bar_chart div{
+  font: 10px sans-serif;
+  background-color: steelblue;
+  text-align: right;
+  padding: 3px;
+  margin: 1px;
+  color: white;
+}
+
+.bar_chart .barbg {
+    stroke: white;
+    fill: white;
+}
+
+.bar_chart .bar {
+    stroke: white;
+    fill: steelblue;
+}
+
+.bar_chart .selected {
+    stroke: white;
+    fill: skyblue;
+}
