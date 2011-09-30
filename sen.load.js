@@ -3,6 +3,8 @@
 var SUBCONCEPTS = 0; // Line with the subconcepts
 var CONCEPTS = 1;    // Line with the subconcepts
 
+var main;		// FIXME: implement a cleaner hook
+
 var SenatorParser = {
     monovalued : ["acta", "name", "group", "declaration_url", "adoptive_father", "highlights", "marital_status", "matrimonial", "declaration_date", "region", "irpf", "societes", "others_debts", "notes" ],
     
@@ -64,15 +66,14 @@ var SenatorParser = {
 
 };
 
+var senators = [];
 
 d3.text("data/declaracion_senadores.csv", function(csv) {
 	    var info = d3.csv.parseRows(csv);
 	    var labels_row = info[CONCEPTS];
-	 
-	    var senators = [];
 
-//	    for (var i = CONCEPTS+1, n = info.length; i < n; i++) {
-	    for (var i = CONCEPTS+6, n = 8; i < n; i++) {
+	    for (var i = CONCEPTS+1, n = info.length; i < n; i++) {
+//	    for (var i = CONCEPTS+6, n = 8; i < n; i++) {
 		var senator = Object.create(Senator);
 		
 		SenatorParser.parse_monovalued(senator, info[i], labels_row);
@@ -81,7 +82,7 @@ d3.text("data/declaracion_senadores.csv", function(csv) {
 
 	    }
 	    
-	    console.log(senators);
+	    main(senators);
 	}
        );
 

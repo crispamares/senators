@@ -1,6 +1,9 @@
+var tip;
+
+
 var draw_irpf = function(senators) {
     var width = 1000;
-    var height = 4000;
+    var height = 1000;
     
     var irpf = [];
     irpf = senators.map(function(senator){return senator.irpf;});
@@ -18,7 +21,7 @@ var draw_irpf = function(senators) {
     var chart = d3.select("#irpfChart")
 	.append("svg:svg")
 	.attr("class", "bar_chart")
-	.attr("width", width + 100)
+	.attr("width", width + 135)
 	.attr("height", height + 40)
 	.append("svg:g")
 	.attr("transform", "translate("+x(d3.min(irpf))+",40)");
@@ -58,21 +61,29 @@ var draw_irpf = function(senators) {
 	.attr("width", x)
     ;
 
-    chart.selectAll("text")
-	.data(irpf)
-	.enter().append("svg:text")
-	.attr("x", x)
-	.attr("y", function(d) { return y(d) + y.rangeBand() / 2; })
-	.attr("dx", 4) // padding-left
-	.attr("dy", ".35em") // vertical-align: middle
-	.attr("text-anchor", "start") // text-align: right
-	.attr("opacity", 0)
-	.text(String)
-	.transition()
-	.delay(1000)
-	.duration(1000)
-	.attr("opacity", 1)
+
+    tip = chart.selectAll(".tip")
+	.data([0])
+	.enter()
+	.append("svg:g")
+	.attr("class", "tip")
+	.attr("transform", function(d) 
+	      {return "translate("+x(irpf[d])+","+ (y(irpf[d]) + (y.rangeBand() / 2)) +")";})
     ;
+
+    tip.append("svg:rect")
+	.attr("width", "8em")
+	.attr("height", "1.4em")
+	.attr("x", ".2em")
+	.attr("y", "-0.7em")
+	.attr("rx", 5)
+	.attr("ry", 5)
+    ;
+
+    tip.append("svg:text")
+	.attr("dx", "2em") // padding-left
+	.attr("dy", ".35em")
+	.text(String);
 
     chart.selectAll("text.rule")
 	.data(x.ticks(10))
@@ -84,12 +95,29 @@ var draw_irpf = function(senators) {
 	.attr("text-anchor", "middle")
 	.text(String);
 
-    chart.selectAll(".barbg").on("mouseover", function() {
-				   d3.select(this).attr("class", "selected");
-			       });
 
-    chart.selectAll(".barbg").on("mouseout", function() {
-				   d3.select(this).attr("class","barbg");
+    chart.selectAll(".barbg").on("mouseover", function(d, i) {
+				     d3.select(this).attr("class", "selected");
+				     //d3.selectAll(".bar").filter( function(bd, bi) {return bi == i;}).classed("selected", true);
+				     d3.select(".tip")
+					 .data([i])
+					 .transition()
+					 .duration(250)
+					 .ease("bounce")
+					 .attr("transform", function(d) 
+					       {return "translate("+x(irpf[d])+","+ (y(irpf[d]) + (y.rangeBand() / 2)) +")";})
+					 .each("end", function () {
+						 d3.select(".tip text")
+						     .data([i])
+						     .text(function(d) {return String(irpf[d]);})	
+						 ;
+					     }
+					    );
+				 });
+
+    chart.selectAll(".barbg").on("mouseout", function(d, i) {
+				     d3.select(this).attr("class","barbg");
+				     //d3.selectAll(".bar").filter( function(bd, bi) {return bi == i;}).classed("selected", false);
 			       });
 
 };

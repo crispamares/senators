@@ -22,7 +22,24 @@ div {
     fill: steelblue;
 }
 
+.bar_chart .bar .selected{
+    stroke: red;
+}
+
 .bar_chart .selected {
     stroke: white;
-    fill: skyblue;
+    fill: azure;
+}
+
+
+
+.tip rect{
+    stroke: white;
+    fill: black;
+}
+
+.tip text{
+    text-anchor: start;
+    stroke: none;
+    fill: white;
 }

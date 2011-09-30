@@ -13,6 +13,12 @@ var parseDecimal = function(str) {
     return parseFloat( str.replace(".","").replace(",",".") );
 };
 
+
+/*
+ * All the parsed data
+ */
+var senators = []; 
+
 var Item = {
     item: "",
     euros: 0,
