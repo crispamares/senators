@@ -1,0 +1,18 @@
+.bar_chart .GPP {
+    fill: steelblue;
+}
+.bar_chart .GPS {
+    fill: crimson;
+}
+.bar_chart .GPCIU {
+    fill: gold;
+}
+.bar_chart .GPSN {
+    fill: forestgreen;
+}
+.bar_chart .GPECP {
+    fill: goldenrod;
+}
+.bar_chart .GPMX {
+    fill: darkorchid;
+}

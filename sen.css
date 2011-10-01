@@ -3,13 +3,8 @@ div {
     margin:0px;
 }
 
-.bar_chart div{
-  font: 10px sans-serif;
-  background-color: steelblue;
-  text-align: right;
-  padding: 3px;
-  margin: 1px;
-  color: white;
+#irpfChart {
+    text-align: left;
 }
 
 .bar_chart .barbg {
@@ -17,21 +12,18 @@ div {
     fill: white;
 }
 
+.bar_chart .barbg.selected {
+    fill: lightblue;
+}
+
 .bar_chart .bar {
+    stroke: none;
+    fill: gray;
+}
+
+.bar_chart .bar.selected{
     stroke: white;
-    fill: steelblue;
 }
-
-.bar_chart .bar .selected{
-    stroke: red;
-}
-
-.bar_chart .selected {
-    stroke: white;
-    fill: azure;
-}
-
-
 
 .tip rect{
     stroke: white;
@@ -43,3 +35,4 @@ div {
     stroke: none;
     fill: white;
 }
+

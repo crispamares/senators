@@ -1,12 +1,22 @@
 var tip;
 
-
 var draw_irpf = function(senators) {
     var width = 1000;
-    var height = 1000;
+    var height = 800;
+    
+    var sort_by_amount = function(sen_a, sen_b) {return d3.descending(sen_a.irpf, sen_b.irpf);};
+
+    var sort_by_group = function(sen_a, sen_b) {
+	if (sen_a.group == sen_b.group) 
+	    return d3.descending(sen_a.irpf, sen_b.irpf);
+	else
+	    return d3.descending(sen_a.group, sen_b.group);
+    };
     
     var irpf = [];
     irpf = senators.map(function(senator){return senator.irpf;});
+
+    var group = senators.map(function(senator){return senator.group;});
 
     var x_total = Math.abs(d3.min(irpf)) + Math.abs(d3.max(irpf));
 
@@ -15,14 +25,16 @@ var draw_irpf = function(senators) {
 	.range([ (Math.abs(d3.min(irpf))/x_total)*width,"0", (Math.abs(d3.max(irpf))/x_total)*width]);
 
     var y = d3.scale.ordinal()
-        .domain(irpf)
+	.domain(irpf)
         .rangeBands([0, height]);
 
     var chart = d3.select("#irpfChart")
+	.attr("width", width + 135)
+	.attr("height", height + 100)
 	.append("svg:svg")
 	.attr("class", "bar_chart")
 	.attr("width", width + 135)
-	.attr("height", height + 40)
+	.attr("height", height + 50)
 	.append("svg:g")
 	.attr("transform", "translate("+x(d3.min(irpf))+",40)");
 
@@ -50,7 +62,7 @@ var draw_irpf = function(senators) {
 	.data(irpf)
 	.enter()
 	.append("svg:rect")
-	.attr("class","bar")
+	.attr("class",function (d, i) {return "bar " + senators[i].group;})
 	.attr("y", y)
 	.attr("x", function(d) {return (d >= 0) ? 0 : -x(d);})
 	.attr("height", y.rangeBand())
@@ -60,8 +72,7 @@ var draw_irpf = function(senators) {
 	.ease("bounce")
 	.attr("width", x)
     ;
-
-
+    
     tip = chart.selectAll(".tip")
 	.data([0])
 	.enter()
@@ -83,7 +94,8 @@ var draw_irpf = function(senators) {
     tip.append("svg:text")
 	.attr("dx", "2em") // padding-left
 	.attr("dy", ".35em")
-	.text(String);
+	.text(function (d) {return String(d)+ " €";});
+
 
     chart.selectAll("text.rule")
 	.data(x.ticks(10))
@@ -93,32 +105,69 @@ var draw_irpf = function(senators) {
 	.attr("y", 0)
 	.attr("dy", -5)
 	.attr("text-anchor", "middle")
-	.text(String);
+	.text(function (d) {return String(d)+ " €";});
 
 
-    chart.selectAll(".barbg").on("mouseover", function(d, i) {
-				     d3.select(this).attr("class", "selected");
-				     //d3.selectAll(".bar").filter( function(bd, bi) {return bi == i;}).classed("selected", true);
-				     d3.select(".tip")
-					 .data([i])
-					 .transition()
-					 .duration(250)
-					 .ease("bounce")
-					 .attr("transform", function(d) 
-					       {return "translate("+x(irpf[d])+","+ (y(irpf[d]) + (y.rangeBand() / 2)) +")";})
-					 .each("end", function () {
-						 d3.select(".tip text")
-						     .data([i])
-						     .text(function(d) {return String(irpf[d]);})	
-						 ;
-					     }
-					    );
-				 });
+    var on_mouseover = function(d, i) {
+	d3.select(this).classed("selected", true);
+	d3.select(".tip")
+	    .data([i])
+	    .transition()
+	    .duration(250)
+	    .ease("bounce")
+	    .attr("transform", function(d) 
+		  {return "translate("+x(irpf[d])+","+ (y(irpf[d]) + (y.rangeBand() / 2)) +")";})
+	    .each("end", function () {
+		      d3.select(".tip text")
+			  .data([i])
+			  .text(function(d) {return String(irpf[d])+ " €";})	
+		      ;
+		  }
+		 );
+    };
 
-    chart.selectAll(".barbg").on("mouseout", function(d, i) {
-				     d3.select(this).attr("class","barbg");
-				     //d3.selectAll(".bar").filter( function(bd, bi) {return bi == i;}).classed("selected", false);
-			       });
+    var on_mouseout = function(d, i) {
+	d3.select(this).classed("selected",false);
+    };
+    
+    chart.selectAll(".barbg").on("mouseover", on_mouseover );
+    chart.selectAll(".bar").on("mouseover", on_mouseover );
+
+    chart.selectAll(".barbg").on("mouseout", on_mouseout);
+    chart.selectAll(".bar").on("mouseout", on_mouseout);
+
+
+    var btn_array = d3.select("#irpfChart").insert("div", ".bar_chart")
+	.classed("button_array", true)
+	.text("Order by:  ")
+    ;
+
+    btn_array.append("button")
+	.classed("first", true)
+	.text("Amount")
+	.on("click", function(){redraw(sort_by_amount);})
+    ;
+    btn_array.append("button")
+	.classed("last", true)
+	.text("Group")
+	.on("click", function(){redraw(sort_by_group);})
+    ;
+
+    var redraw = function(ordering) {
+	y.domain(senators.sort(ordering).map(function(senator){return senator.irpf;}));
+
+	chart.selectAll(".bar")
+	    .data(irpf)
+	    .transition()
+	    .attr("y", y)
+	    ;
+	chart.selectAll(".barbg")
+	    .data(irpf)
+	    .transition()
+	    .attr("y", y)
+	    ;
+	
+    };
 
 };
 

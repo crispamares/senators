@@ -1,0 +1,2 @@
+* Rellenar el senador que no tiene grupo parlamentario
+* BUG: Arreglar el parseo de, ej: loans. Se acumula en el prototype en vez de en cada objeto
